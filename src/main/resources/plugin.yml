@@ -1,0 +1,7 @@
+name: UltiToolsExtExample
+version: '${project.version}'
+main: com.example.ultitoolsext.UltiToolsExtExample
+api-version: '1.20'
+description: Example external plugin using UltiTools-API
+authors: [wisdomme]
+depend: [UltiTools]
