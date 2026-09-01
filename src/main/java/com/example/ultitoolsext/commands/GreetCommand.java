@@ -3,7 +3,7 @@ package com.example.ultitoolsext.commands;
 import com.example.ultitoolsext.UltiToolsExtExample;
 import com.example.ultitoolsext.data.VisitorRecord;
 import com.example.ultitoolsext.services.GreetService;
-import com.ultikits.ultitools.abstracts.AbstractCommandExecutor;
+import com.ultikits.ultitools.abstracts.command.BaseCommandExecutor;
 import com.ultikits.ultitools.annotations.Autowired;
 import com.ultikits.ultitools.annotations.command.CmdExecutor;
 import com.ultikits.ultitools.annotations.command.CmdMapping;
@@ -23,7 +23,7 @@ import java.util.List;
         description = "External plugin example command",
         alias = {"ultiext", "uext"}
 )
-public class GreetCommand extends AbstractCommandExecutor {
+public class GreetCommand extends BaseCommandExecutor {
 
     @Autowired
     private GreetService greetService;
