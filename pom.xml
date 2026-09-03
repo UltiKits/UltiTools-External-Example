@@ -17,6 +17,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <!-- Scope decision (phase 9, plan 09-14): this repository is deliberately not
+         subject to the module coverage gate applied to the sixteen product modules, and
+         it has no CI workflow to run one in. It demonstrates the External Plugin API
+         rather than shipping as a UltiToolsPlugin module, so this phase's scope for it is
+         load correctness on the 6.3.0 lineage, not test coverage. -->
     <build>
         <plugins>
             <plugin>
@@ -49,6 +54,19 @@
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+        <!-- Resolves UltiTools-API 6.3.0-SNAPSHOT ahead of the 6.3.0 release (phase 9,
+             MOD-01/MOD-02). Without this entry the snapshot coordinate below cannot be
+             resolved at all; the repositories already declared above serve releases only. -->
+        <repository>
+            <id>central-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -61,7 +79,7 @@
         <dependency>
             <groupId>com.ultikits</groupId>
             <artifactId>UltiTools-API</artifactId>
-            <version>6.2.2</version>
+            <version>6.3.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
