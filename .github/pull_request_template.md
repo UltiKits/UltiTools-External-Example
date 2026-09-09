@@ -37,6 +37,6 @@ Anything inside an HTML comment, a code fence, or backticks does not count as a 
 <!-- Delete any line that does not apply. -->
 
 - [ ] Targets `master`
-- [ ] Line endings preserved per file (`file <path>` before and after; this tree is CRLF)
+- [ ] Line endings preserved per file (`file <path>` before and after; this tree MIXES conventions -- pre-existing tracked files such as `README.md`, `pom.xml` and `src/main/resources/plugin.yml` are CRLF, while `FEATURES.md`, `UAT-CHECKLIST.md` and this template are LF -- match whichever convention the specific file you are touching already uses, never convert it)
 - [ ] Every comment, javadoc, workflow comment, and this PR's own title and body are English-first with Chinese as a supplement, and nothing was added to `.github/cjk-allowlist.txt`
 - [ ] `FEATURES.md` and `UAT-CHECKLIST.md` updated for every feature change in this PR, or N/A with the reason
