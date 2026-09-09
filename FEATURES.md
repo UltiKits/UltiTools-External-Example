@@ -8,11 +8,18 @@ for UAT execution and issue reconciliation — the public description of these f
 This repository is not a plugin module in the usual sense — it is a worked, buildable example
 demonstrating how a **plain Bukkit `JavaPlugin`** (one that does NOT extend `UltiToolsPlugin`)
 integrates with the framework through the External Plugin API (`UltiToolsAPI.connect(this)`,
-`UltiToolsAPI.getDataOperator(...)`, `UltiToolsAPI.getEventBus()`,
-`UltiToolsAPI.disconnect(this)`). Its five `@CmdMapping` commands and one `@EventListener` class
-exist specifically to exercise that API surface end to end, including the one place in the
-eighteen repositories this phase covers where the External Plugin API's own `DataOperator` data
-path is exercised on a real server.
+`UltiToolsAPI.getDataOperator(...)`, `UltiToolsAPI.disconnect(this)`) and through the framework's
+own annotation-driven registration (`@Service`/`@Autowired` bean wiring, `@CmdMapping` command
+dispatch, `@EventListener` Bukkit event registration). Its five `@CmdMapping` commands and one
+`@EventListener` class exist specifically to exercise that surface end to end, including the one
+place in the eighteen repositories this phase covers where the External Plugin API's own
+`DataOperator` data path is exercised on a real server. `UltiToolsAPI.getEventBus()` — the
+framework's separate cross-module pub/sub system — is a real method on the same API class, but
+this example does not call it anywhere in its 5 source files (confirmed by reading all 5 in full
+and by a repository-wide grep for `EventBus`, zero hits); `JoinListener`'s `@EventListener`
+annotation instead reaches `ListenerManager#registerAllExternal`, which calls Bukkit's own
+`PluginManager#registerEvents` directly — a distinct mechanism from the module EventBus, and not
+demonstrated by this repository.
 
 ## Conventions
 
