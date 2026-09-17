@@ -10,13 +10,19 @@
     <packaging>jar</packaging>
 
     <name>UltiTools-External-Example</name>
-    <description>Example external Bukkit plugin using UltiTools-API v6.2.2</description>
+    <description>Example external Bukkit plugin using UltiTools-API 6.3.0</description>
 
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <paper.version>1.21.11-R0.1-SNAPSHOT</paper.version>
     </properties>
 
+    <!-- Scope decision: this repository is deliberately not subject to the JaCoCo
+         coverage gate applied to the fifteen UltiKits product modules. It demonstrates the
+         External Plugin API rather than shipping as a UltiToolsPlugin module. Its tests run
+         in CI (.github/workflows/maven-ci.yml, `mvn -B verify`), which also packages the jar;
+         there is no coverage check. -->
     <build>
         <plugins>
             <plugin>
@@ -35,6 +41,11 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.1.2</version>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -46,22 +57,36 @@
 
     <repositories>
         <repository>
-            <id>spigotmc-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+        <!-- Maven Central's snapshot repository, where UltiTools-API 6.3.0-SNAPSHOT is
+             published ahead of the 6.3.0 release. PaperMC's maven-public group above currently
+             proxies these snapshots as well, but this build declares the publishing repository
+             itself rather than depending on that proxy. -->
+        <repository>
+            <id>central-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.20.4-R0.1-SNAPSHOT</version>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>${paper.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.ultikits</groupId>
             <artifactId>UltiTools-API</artifactId>
-            <version>6.2.2</version>
+            <version>6.3.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -69,6 +94,38 @@
             <artifactId>lombok</artifactId>
             <version>1.18.30</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- Test dependencies: same coordinates and versions as the UltiKits modules -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.10.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.10.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.5.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.24.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockbukkit.mockbukkit</groupId>
+            <artifactId>mockbukkit-v1.21</artifactId>
+            <version>4.101.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

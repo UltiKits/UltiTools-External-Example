@@ -18,9 +18,9 @@ Why this section exists: `master` is this repository's own default branch (unlik
 framework, which merges feature work into `alpha` first), so a `Closes #1234` written outside
 this comment DOES act automatically on merge here -- GitHub only honours closing keywords on a
 merge into the default branch, and a pull request into `master` already is one. There is no
-`phase-closeout.yml` or any other workflow in this repository at all -- `.github/workflows/`
-does not exist here, and this repository has no configured CI of any kind -- this section's
-declarations are what closes the issue, not a follow-up automation step. State `None` explicitly
+`phase-closeout.yml` in this repository -- its only workflow is `maven-ci.yml`, which builds and
+tests and closes nothing -- so this section's declarations are what closes the issue, not a
+follow-up automation step. State `None` explicitly
 rather than leaving the section blank, so a reviewer can tell "closes nothing" apart from
 "forgot to fill this in".
 
