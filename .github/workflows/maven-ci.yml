@@ -7,7 +7,7 @@ permissions:
   contents: read
 jobs:
   verify:
-    name: Test, coverage gate & package (JDK ${{ matrix.java-version }})
+    name: Test & package (JDK ${{ matrix.java-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -23,6 +23,5 @@ jobs:
           java-version: ${{ matrix.java-version }}
           cache: maven
       - name: Verify
-        # verify runs test, then jacoco:check, then package -- one command replaces the shared
-        # workflow's separate test and package steps, and is the only phase at which the gate runs.
+        # verify runs the tests, then packages the jar. This repository has no coverage check.
         run: mvn -B verify
