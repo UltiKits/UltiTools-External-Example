@@ -10,18 +10,20 @@
     <packaging>jar</packaging>
 
     <name>UltiTools-External-Example</name>
-    <description>Example external Bukkit plugin using UltiTools-API v6.2.2</description>
+    <description>Example external Bukkit plugin using UltiTools-API 6.3.0</description>
 
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <paper.version>1.21.11-R0.1-SNAPSHOT</paper.version>
     </properties>
 
     <!-- Scope decision (phase 9, plan 09-14): this repository is deliberately not
-         subject to the module coverage gate applied to the sixteen product modules, and
-         it has no CI workflow to run one in. It demonstrates the External Plugin API
-         rather than shipping as a UltiToolsPlugin module, so this phase's scope for it is
-         load correctness on the 6.3.0 lineage, not test coverage. -->
+         subject to the JaCoCo coverage gate applied to the sixteen product modules. It
+         demonstrates the External Plugin API rather than shipping as a UltiToolsPlugin
+         module. Phase 17 (D-13) adds a test suite and the modules' maven-ci.yml, whose
+         `mvn -B verify` runs those tests and packages the jar; there is still no coverage
+         check, by the same decision. -->
     <build>
         <plugins>
             <plugin>
@@ -40,6 +42,11 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.1.2</version>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -51,8 +58,8 @@
 
     <repositories>
         <repository>
-            <id>spigotmc-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
         <!-- Resolves UltiTools-API 6.3.0-SNAPSHOT ahead of the 6.3.0 release (phase 9,
              MOD-01/MOD-02). Without this entry the snapshot coordinate below cannot be
@@ -71,9 +78,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.20.4-R0.1-SNAPSHOT</version>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>${paper.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -87,6 +94,38 @@
             <artifactId>lombok</artifactId>
             <version>1.18.30</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- Test dependencies: same coordinates and versions as the UltiKits modules -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.10.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.10.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.5.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.24.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockbukkit.mockbukkit</groupId>
+            <artifactId>mockbukkit-v1.21</artifactId>
+            <version>4.101.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
