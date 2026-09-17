@@ -72,19 +72,20 @@ find <repo-root> -path '*/src/main/java/*' -name '*.java' -not -path '*/target/*
   -not -path '*/.worktrees/*' -print0 | xargs -0 grep -nE '^[[:space:]]*@AnnotationName\b' | wc -l
 ```
 
-This repository is a single-root Maven project (`src/main/java` only, 5 source files total),
-carries no git worktree directory, and has no javadoc or string-literal mention of any of its own
-annotation names — the naive (unanchored) and line-start counts are identical for every kind
-measured below, but the anchored `find`/`grep` form is used regardless, so the same command is
-trustworthy unmodified against every repository in the fan-out.
+This repository is a single-root Maven project (`src/main/java` only, 5 source files total) and
+carries no git worktree directory. Its comments do name some of its own annotations — the
+`connect` comment in `UltiToolsExtExample.java` names `@CmdExecutor` and `@EventListener`, and
+`GreetCommand`'s class javadoc names `@CmdExecutor` (twice) and `@CmdMapping` — so an unanchored
+count over-counts those two kinds (`@CmdExecutor` 4, `@CmdMapping` 6, `@EventListener` 2). The
+anchored `find`/`grep` form above counts only annotation sites and is the one used below.
 
 **Positive controls**, each confirmed by reading the cited line directly, not by trusting the
 count alone:
 
 | Annotation | Sites | Positive control |
 |---|---|---|
-| `@CmdExecutor` | 1 | `GreetCommand.java:21`, class-level, `alias = {"ultiext", "uext"}` |
-| `@CmdMapping` | 5 | `GreetCommand.java:31` (`hello`), `:37` (`info`), `:44` (`visit <name>`), `:74` (`visitors`), `:93` (`delvisitor <name>`) |
+| `@CmdExecutor` | 1 | `GreetCommand.java:46`, class-level, `alias = {"ultiext", "uext"}` |
+| `@CmdMapping` | 5 | `GreetCommand.java:56` (`hello`), `:62` (`info`), `:69` (`visit <name>`), `:99` (`visitors`), `:118` (`delvisitor <name>`) |
 | `@EventListener` | 1 | `JoinListener.java:16`, class-level, on `PlayerJoinEvent`'s handler class |
 | `@Scheduled` | 0 | no background task exists anywhere in this repository's 5 source files — confirmed by reading all 5 in full |
 | `@ConfigEntity` | 0 | this repository ships no configuration of its own, by design — it demonstrates the External Plugin API from a plain Bukkit plugin, not a configuration surface. Zero written, not omitted: this line is the phase's own live test of that rule |
@@ -115,8 +116,8 @@ plain `JavaPlugin` connected through `UltiToolsAPI.connect(this)`, exactly as it
 `GreetCommand`'s three data-manipulation sub-commands, explicitly labeled "Data Storage Tests" in
 this class's own code comment — they exist to exercise `UltiToolsAPI.getDataOperator(this,
 VisitorRecord.class)`'s CRUD surface by hand, not to serve real gameplay. `VisitorRecord`
-(`@Table("visitor_records")`, extends `BaseDataEntity<String>`, current-generation API, not the
-deprecated `AbstractDataEntity`) is this repository's one persisted entity, tracking a player
+(`@Table("visitor_records")`, extends `BaseDataEntity<String>`, current-generation API, not
+`AbstractDataEntity`, which UltiTools-API 6.3.0 removed) is this repository's one persisted entity, tracking a player
 name, a visit count, and a last-visit timestamp.
 
 | ID | Feature | Kind | How to reach | Permission | Target | Tier | Manual | Source |
