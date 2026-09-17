@@ -60,9 +60,10 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
-        <!-- Resolves UltiTools-API 6.3.0-SNAPSHOT ahead of the 6.3.0 release. Without this
-             entry that snapshot coordinate cannot be resolved; the PaperMC repository above
-             hosts Paper artifacts, not UltiTools-API. -->
+        <!-- Maven Central's snapshot repository, where UltiTools-API 6.3.0-SNAPSHOT is
+             published ahead of the 6.3.0 release. PaperMC's maven-public group above currently
+             proxies these snapshots as well, but this build declares the publishing repository
+             itself rather than depending on that proxy. -->
         <repository>
             <id>central-snapshots</id>
             <url>https://central.sonatype.com/repository/maven-snapshots/</url>
