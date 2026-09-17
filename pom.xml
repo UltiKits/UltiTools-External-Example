@@ -18,12 +18,11 @@
         <paper.version>1.21.11-R0.1-SNAPSHOT</paper.version>
     </properties>
 
-    <!-- Scope decision (phase 9, plan 09-14): this repository is deliberately not
-         subject to the JaCoCo coverage gate applied to the sixteen product modules. It
-         demonstrates the External Plugin API rather than shipping as a UltiToolsPlugin
-         module. Phase 17 (D-13) adds a test suite and the modules' maven-ci.yml, whose
-         `mvn -B verify` runs those tests and packages the jar; there is still no coverage
-         check, by the same decision. -->
+    <!-- Scope decision: this repository is deliberately not subject to the JaCoCo
+         coverage gate applied to the fifteen UltiKits product modules. It demonstrates the
+         External Plugin API rather than shipping as a UltiToolsPlugin module. Its tests run
+         in CI (.github/workflows/maven-ci.yml, `mvn -B verify`), which also packages the jar;
+         there is no coverage check. -->
     <build>
         <plugins>
             <plugin>
@@ -61,9 +60,9 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
-        <!-- Resolves UltiTools-API 6.3.0-SNAPSHOT ahead of the 6.3.0 release (phase 9,
-             MOD-01/MOD-02). Without this entry the snapshot coordinate below cannot be
-             resolved at all; the repositories already declared above serve releases only. -->
+        <!-- Resolves UltiTools-API 6.3.0-SNAPSHOT ahead of the 6.3.0 release. Without this
+             entry that snapshot coordinate cannot be resolved; the PaperMC repository above
+             hosts Paper artifacts, not UltiTools-API. -->
         <repository>
             <id>central-snapshots</id>
             <url>https://central.sonatype.com/repository/maven-snapshots/</url>
