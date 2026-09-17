@@ -12,6 +12,13 @@ for real-machine verification, not user-facing documentation.
 ## Conventions
 
 - **Columns:** `ID`, `Preconditions`, `Steps`, `Expected`, `Layer`, `Covers`.
+- **Build under test:** every row assumes a server running UltiTools-API 6.3.0 and this plugin's
+  jar built from a commit that includes the 6.3.0 migration of `GreetCommand` onto
+  `BaseCommandExecutor` (UltiKits/UltiTools-External-Example#4). A jar built before that migration
+  still loads, and its `JoinListener` still runs, but it registers no `/ultiext` sub-command, so
+  every row that runs `/ultiext` gets Bukkit's `Unknown or incomplete command` reply. Confirm the
+  installed jar's source commit before executing any row; a stale jar is a setup error, not a
+  row failure.
 - **ID:** cites its `FEATURES.md` ID verbatim. A negative case suffixes the checklist ID only,
   as `.neg-<slug>` — a negative case still tests the same feature, so the base ID is unchanged.
 - **Layer**, copied verbatim from Laojun's own `ultitools-real-client-uat` skill so no
