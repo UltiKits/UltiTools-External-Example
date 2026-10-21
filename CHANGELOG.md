@@ -22,8 +22,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Changed
 
 - Migrated to UltiTools-API 6.3.0 and Paper: the example now builds against
-  `UltiTools-API 6.3.0-SNAPSHOT` and `paper-api 1.21.11-R0.1-SNAPSHOT` instead of UltiTools-API 6.2.2
+  `UltiTools-API 6.3.0` and `paper-api 1.21.11-R0.1-SNAPSHOT` instead of UltiTools-API 6.2.2
   and `spigot-api 1.20.4-R0.1-SNAPSHOT` (UltiKits/UltiTools-External-Example#4).
-- 迁移到 UltiTools-API 6.3.0 与 Paper：示例改为基于 `UltiTools-API 6.3.0-SNAPSHOT` 与
+- 迁移到 UltiTools-API 6.3.0 与 Paper：示例改为基于 `UltiTools-API 6.3.0` 与
   `paper-api 1.21.11-R0.1-SNAPSHOT` 构建，不再使用 UltiTools-API 6.2.2 与 `spigot-api 1.20.4-R0.1-SNAPSHOT`
   （UltiKits/UltiTools-External-Example#4）。
