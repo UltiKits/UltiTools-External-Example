@@ -20,7 +20,7 @@ A minimal example showing how any standard Bukkit/Spigot/Paper plugin can integr
 <dependency>
     <groupId>com.ultikits</groupId>
     <artifactId>UltiTools-API</artifactId>
-    <version>6.2.2</version>
+    <version>6.3.0</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -93,7 +93,7 @@ src/main/java/com/example/ultitoolsext/
 mvn clean package
 ```
 
-Copy the JAR to your server's `plugins/` folder. Requires UltiTools-API 6.2.2+ on the server.
+Copy the JAR to your server's `plugins/` folder. Requires UltiTools-API 6.3.0 or later on the server.
 
 ## Documentation
 
