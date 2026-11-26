@@ -7,6 +7,15 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### UltiTools-API 7.0 migration
+
+- The standalone external plugin now builds against `UltiTools-API 7.0.0-SNAPSHOT`, Paper 26.3 and JDK 25. It still connects from `JavaPlugin.onEnable()` and disconnects from `onDisable()`.
+- The command tests now exercise the framework-built Brigadier tree delivered through Paper’s commands lifecycle. The sample replies stay in English; the external integration does not load a plugin-specific message catalogue.
+- 独立外部插件现使用 `UltiTools-API 7.0.0-SNAPSHOT`、Paper 26.3 和 JDK 25 构建，仍在 `JavaPlugin.onEnable()` 中连接、在 `onDisable()` 中断开。
+- 命令测试改为执行由框架构造、经 Paper 命令生命周期投递的 Brigadier 命令树。外部接入不加载插件自己的消息目录，示例回复继续使用英文。
+
+### Previous 6.3.0 migration
+
 ### Fixed
 
 - The `/ultiext` (alias `/uext`) sub-commands `hello`, `info`, `visit`, `visitors` and `delvisitor`
