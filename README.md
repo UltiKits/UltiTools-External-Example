@@ -122,6 +122,8 @@ Use JDK 25 and Maven:
 mvn -U clean verify
 ```
 
+Requires UltiTools-API `7.0.0` or later on the server.
+
 With the server stopped, install `target/UltiTools-External-Example-1.0.0.jar` in `plugins/` alongside UltiTools (not in the UltiTools modules directory), then start the server.
 
 ## Documentation

@@ -25,8 +25,11 @@ public final class UltiToolsExtExample extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        UltiToolsAPI.disconnect(this);
-        visitorData = null;
+        try {
+            UltiToolsAPI.disconnect(this);
+        } finally {
+            visitorData = null;
+        }
         getLogger().info("UltiTools External Example disabled!");
     }
 }

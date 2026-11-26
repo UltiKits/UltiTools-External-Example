@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -224,6 +225,50 @@ class GreetCommandTest {
             plugin.onDisable();
             api.verify(() -> UltiToolsAPI.disconnect(plugin));
             assertThat(plugin.getVisitorData()).isNull();
+        }
+    }
+
+    @Test
+    void enablePropagatesConnectFailureAndDisableIsSafe() {
+        var plugin = mock(UltiToolsExtExample.class);
+        when(plugin.getLogger()).thenReturn(Logger.getLogger("external-example-test"));
+        doCallRealMethod().when(plugin).onEnable();
+        doCallRealMethod().when(plugin).onDisable();
+        when(plugin.getVisitorData()).thenCallRealMethod();
+        var failure = new IllegalStateException("Failed to connect");
+        try (var api = mockStatic(UltiToolsAPI.class)) {
+            api.when(() -> UltiToolsAPI.connect(plugin)).thenThrow(failure);
+            api.when(() -> UltiToolsAPI.disconnect(plugin)).thenCallRealMethod();
+
+            assertThat(assertThrows(IllegalStateException.class, plugin::onEnable)).isSameAs(failure);
+            api.verify(() -> UltiToolsAPI.connect(plugin));
+            api.verifyNoMoreInteractions();
+            assertThat(plugin.getVisitorData()).isNull();
+
+            assertDoesNotThrow(plugin::onDisable);
+            api.verify(() -> UltiToolsAPI.disconnect(plugin));
+            assertThat(plugin.getVisitorData()).isNull();
+        }
+    }
+
+    @Test
+    void disableClearsCachedDataEvenIfDisconnectThrows() {
+        var plugin = mock(UltiToolsExtExample.class);
+        var logger = mock(Logger.class);
+        when(plugin.getLogger()).thenReturn(logger);
+        doCallRealMethod().when(plugin).onEnable();
+        doCallRealMethod().when(plugin).onDisable();
+        when(plugin.getVisitorData()).thenCallRealMethod();
+        var failure = new IllegalStateException("Failed to disconnect");
+        try (var api = mockStatic(UltiToolsAPI.class)) {
+            api.when(() -> UltiToolsAPI.getDataOperator(plugin, VisitorRecord.class)).thenReturn(harness.data);
+            api.when(() -> UltiToolsAPI.disconnect(plugin)).thenThrow(failure);
+            plugin.onEnable();
+            assertThat(plugin.getVisitorData()).isSameAs(harness.data);
+
+            assertThat(assertThrows(IllegalStateException.class, plugin::onDisable)).isSameAs(failure);
+            assertThat(plugin.getVisitorData()).isNull();
+            verify(logger, never()).info("UltiTools External Example disabled!");
         }
     }
 

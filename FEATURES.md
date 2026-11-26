@@ -17,6 +17,8 @@ This standalone `JavaPlugin` declares `depend: [UltiTools]` and uses `UltiToolsA
 | `@CmdExecutor` | 1 | `GreetCommand`, with labels `ultiext` and `uext` |
 | `@CmdMapping` | 5 | `GreetCommand#hello`, `#info`, `#visit`, `#visitors`, `#delVisitor` |
 | `@EventListener` | 1 | `JoinListener`, with the Bukkit `@EventHandler` method `onJoin` |
+| `@Service` | 1 | `GreetService` |
+| `@Autowired` | 2 | `GreetCommand` and `JoinListener` constructors |
 | `@Table` | 1 | `VisitorRecord`, table `visitor_records` |
 | `@Scheduled` | 0 | No scheduled task |
 | `@ConfigEntity` | 0 | No sample configuration class |
@@ -32,6 +34,8 @@ There are no GUI or placeholder components. All five declared command mappings h
 | ultitools-example.greet.hello | Greet the player by name or address a non-player sender as `Console`, using the injected `GreetService` | command | `/ultiext hello` (alias `/uext hello`) | ultiext.greet | both | player | none | GreetCommand#hello, GreetService#greet |
 | ultitools-example.greet.help | List the five sample subcommands | command | `/ultiext help` | ultiext.greet | both | player | none | GreetCommand#handleHelp |
 | ultitools-example.greet.info | Show the example's version and confirm service injection | command | `/ultiext info` | ultiext.greet | both | player | none | GreetCommand#info, GreetService#info |
+
+The [UAT checklist](UAT-CHECKLIST.md#greeting-and-command-delivery) also covers the greeting from the server console on first start (`ultitools-example.greet.hello.alt-console`).
 
 ## Data Storage (External Plugin API)
 
