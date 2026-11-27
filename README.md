@@ -1,6 +1,6 @@
 # UltiTools External Plugin Example
 
-A minimal example showing how any standard Bukkit/Spigot/Paper plugin can integrate with [UltiTools-API](https://github.com/UltiKits/UltiTools-Reborn) using the External Plugin API introduced in **v6.2.2**.
+A minimal standalone `JavaPlugin` using the [UltiTools External Plugin API](https://github.com/UltiKits/UltiTools-Reborn). This example targets **UltiTools-API 7.0**; it is not an UltiTools module.
 
 ## What This Demonstrates
 
@@ -20,10 +20,25 @@ A minimal example showing how any standard Bukkit/Spigot/Paper plugin can integr
 <dependency>
     <groupId>com.ultikits</groupId>
     <artifactId>UltiTools-API</artifactId>
-    <version>6.3.0</version>
+    <version>7.0.0-SNAPSHOT</version>
     <scope>provided</scope>
 </dependency>
 ```
+
+Until the framework release is available, enable Maven Central snapshots in your project:
+
+```xml
+<repositories>
+    <repository>
+        <id>central-snapshots</id>
+        <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+        <releases><enabled>false</enabled></releases>
+        <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+</repositories>
+```
+
+When UltiTools-API `7.0.0` is released, change the dependency to `7.0.0` and remove the snapshots repository if nothing else uses it.
 
 ### 2. Declare UltiTools dependency in plugin.yml
 
@@ -32,22 +47,31 @@ name: MyPlugin
 depend: [UltiTools]
 ```
 
-### 3. Connect in onEnable
+### 3. Connect during enable and disconnect during disable
 
 ```java
 public class MyPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
-        UltiToolsAPI.connect(this);  // That's it!
+        UltiToolsAPI.connect(this);
+    }
+
+    @Override
+    public void onDisable() {
+        UltiToolsAPI.disconnect(this);
     }
 }
 ```
 
 After `connect()`, UltiTools automatically scans your plugin's package for:
 - `@Service` — registered as beans in a child IoC container
-- `@CmdExecutor` — commands auto-registered with Bukkit
+- `@CmdExecutor` — compiled into Brigadier command trees and registered through Paper’s commands lifecycle event
 - `@EventListener` — Bukkit listeners auto-registered
-- `@Autowired` — dependency injection across all scanned classes
+- `@Autowired` — dependency injection for scanned beans; the external plugin instance itself can also be injected
+
+An external plugin connected during normal startup participates in the initial commands event. A new command shape connected after startup waits for the next `/minecraft:reload` (data-pack reload) or restart. `/ul reload` reloads framework/module configuration without reconnecting this plugin; it does not replace JARs. Restart to install or update the plugin rather than using Bukkit `/reload`.
+
+This example sends its own replies in English. External `connect()` does not load a plugin’s `messages/` catalogues; the framework can still localize its own command diagnostics.
 
 ### 4. Use DataOperator for persistent storage
 
@@ -81,19 +105,26 @@ src/main/java/com/example/ultitoolsext/
 
 | Command | Description |
 |---------|-------------|
+| `/ultiext help` | List sub-commands |
 | `/ultiext hello` | Greet message (tests @Service injection) |
 | `/ultiext info` | Plugin info |
 | `/ultiext visit <name>` | Record a visit (tests insert + update) |
 | `/ultiext visitors` | List all visitors (tests getAll) |
 | `/ultiext delvisitor <name>` | Delete a visitor (tests delete) |
 
+Use `/uext` as an alias. The console or a player with `ultiext.greet` can run these commands. Players receive the greeting and have their own visit recorded when they join, regardless of command permission.
+
 ## Building
 
+Use JDK 25 and Maven:
+
 ```bash
-mvn clean package
+mvn -U clean verify
 ```
 
-Copy the JAR to your server's `plugins/` folder. Requires UltiTools-API 6.3.0 or later on the server.
+Requires UltiTools-API `7.0.0` or later on the server.
+
+With the server stopped, install `target/UltiTools-External-Example-1.0.0.jar` in `plugins/` alongside UltiTools (not in the UltiTools modules directory), then start the server.
 
 ## Documentation
 

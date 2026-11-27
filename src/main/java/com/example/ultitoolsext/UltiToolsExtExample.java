@@ -9,15 +9,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class UltiToolsExtExample extends JavaPlugin {
 
     @Getter
-    private static UltiToolsExtExample instance;
-
-    @Getter
     private DataOperator<VisitorRecord> visitorData;
 
     @Override
     public void onEnable() {
-        instance = this;
-
         // Connect to UltiTools — scans package for @Service, @CmdExecutor, @EventListener
         UltiToolsAPI.connect(this);
 
@@ -30,8 +25,11 @@ public final class UltiToolsExtExample extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        UltiToolsAPI.disconnect(this);
-        instance = null;
+        try {
+            UltiToolsAPI.disconnect(this);
+        } finally {
+            visitorData = null;
+        }
         getLogger().info("UltiTools External Example disabled!");
     }
 }

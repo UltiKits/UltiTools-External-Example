@@ -16,8 +16,14 @@ import java.util.List;
 @EventListener
 public class JoinListener implements Listener {
 
+    private final UltiToolsExtExample plugin;
+    private final GreetService greetService;
+
     @Autowired
-    private GreetService greetService;
+    public JoinListener(UltiToolsExtExample plugin, GreetService greetService) {
+        this.plugin = plugin;
+        this.greetService = greetService;
+    }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
@@ -25,7 +31,7 @@ public class JoinListener implements Listener {
         event.getPlayer().sendMessage(greetService.greet(name));
 
         // Auto-record visit on join
-        DataOperator<VisitorRecord> data = UltiToolsExtExample.getInstance().getVisitorData();
+        DataOperator<VisitorRecord> data = plugin.getVisitorData();
         if (data != null) {
             List<VisitorRecord> existing = data.getAll(
                     WhereCondition.builder().column("player_name").value(name).build()
