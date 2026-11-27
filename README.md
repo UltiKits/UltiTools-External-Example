@@ -135,3 +135,7 @@ With the server stopped, install `target/UltiTools-External-Example-1.0.0.jar` i
 ## License
 
 MIT
+
+## UltiTools Module Example
+
+See [FieldJournal](module-example/) for a separate Maven project that runs as an UltiTools 7.0 module, rather than a standalone Paper plugin.

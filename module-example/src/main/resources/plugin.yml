@@ -1,0 +1,11 @@
+name: "FieldJournal"
+version: '${project.version}'
+main: "com.example.fieldjournal.FieldJournal"
+authors:
+  - "UltiTools Example Contributors"
+  - UltiKits Team
+description: "Record and revisit your exploration notes"
+api-version: 700
+source-language: en
+bootstrapper: com.example.fieldjournal.FieldJournalBootstrap
+loadAfter: []
