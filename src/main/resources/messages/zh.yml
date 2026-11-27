@@ -1,0 +1,31 @@
+greet:
+  console: "控制台"
+  hello: "你好，<name>！这条消息来自使用 UltiTools-API 的外部插件。"
+  info: "UltiTools 外部插件示例 v1.0.0 — 服务注入已生效！"
+
+help:
+  title: "=== UltiTools 外部插件示例 ==="
+  hello: "/ultiext hello           - 打招呼（测试服务注入）"
+  info: "/ultiext info            - 查看插件信息"
+  visit: '/ultiext visit \<name>    - 记录一次访问（测试新增与更新）'
+  visitors: "/ultiext visitors        - 列出所有访客（测试查询）"
+  delvisitor: '/ultiext delvisitor \<name> - 删除访客记录（测试删除）'
+  reload: "/ultiext reload          - 重载消息覆盖"
+  footer: "=============================="
+
+data:
+  not_initialized: "[错误] 数据操作器尚未初始化！"
+  update_failed: "[错误] 更新失败：<error>"
+  updated: "[数据] 已更新 <name> — 第 <count:'0'> 次访问"
+  created: "[数据] 已为 <name> 创建记录 — 首次访问！"
+  empty: "[数据] 暂无访客记录。"
+  header: "[数据] === 访客记录（<count:'0'> 条）==="
+  row: "  <name> — 访问 <count:'0'> 次"
+  deleted: "[数据] 已删除 <name> 的访客记录"
+
+join:
+  update_failed: "[ExtExample] 更新访问记录失败：<error>"
+
+reload:
+  success: "外部插件消息已重载。"
+  not_connected: "无法重载消息：本插件尚未连接到 UltiTools。"

@@ -8,6 +8,7 @@ A minimal standalone `JavaPlugin` using the [UltiTools External Plugin API](http
 |---------|------|----------------|
 | `UltiToolsAPI.connect(this)` | `UltiToolsExtExample.java` | One-line framework integration |
 | `@Service` + `@Autowired` | `GreetService.java` | IoC container auto-scan & injection |
+| `Messages` | `src/main/resources/messages/`, `GreetService.java` | Plugin-owned replies in English and Chinese |
 | `@CmdExecutor` | `GreetCommand.java` | Auto-registered commands with tab completion |
 | `@EventListener` | `JoinListener.java` | Auto-registered Bukkit event listeners |
 | `DataOperator` CRUD | `GreetCommand.java` + `VisitorRecord.java` | Data storage scoped to plugin's own folder |
@@ -71,8 +72,6 @@ After `connect()`, UltiTools automatically scans your plugin's package for:
 
 An external plugin connected during normal startup participates in the initial commands event. A new command shape connected after startup waits for the next `/minecraft:reload` (data-pack reload) or restart. `/ul reload` reloads framework/module configuration without reconnecting this plugin; it does not replace JARs. Restart to install or update the plugin rather than using Bukkit `/reload`.
 
-This example sends its own replies in English. External `connect()` does not load a plugin’s `messages/` catalogues; the framework can still localize its own command diagnostics.
-
 ### 4. Use DataOperator for persistent storage
 
 ```java
@@ -85,6 +84,12 @@ data.getAll();
 data.update(entity);
 data.del(WhereCondition.builder().column("name").value("test").build());
 ```
+
+## Messages and overrides
+
+Bundle `messages/en.yml` and `messages/zh.yml` directly under `messages/` at the root of your JAR (in this Maven project, use `src/main/resources/messages/`). The example declares `source-language: en` in `plugin.yml`. Once connected, scanned beans receive a `Messages` instance bound to this plugin. Use relative keys like `messages.key("greet.hello")` and pass values with `Arg.string` or `Arg.number`; let `Messages.send` select the language. With `language: auto` in UltiTools, each player sees their client language if available, and the console uses the server fallback language. Startup and shutdown logs remain in English.
+
+To customize a reply, copy only the keys you want to change to `plugins/UltiToolsExtExample/messages/en.yml` or `zh.yml`. After connection, the bundled files are copied to `plugins/UltiToolsExtExample/messages/reference/` for reference; editing those copies does not change replies. Run `/ultiext reload` to apply overrides without restarting. It calls `UltiToolsAPI.reloadMessages(plugin)`; `/ul reload` does not reread external plugin overrides. Malformed override files are ignored with a console warning, and the bundled messages remain available as fallback.
 
 ## Project Structure
 
@@ -111,6 +116,7 @@ src/main/java/com/example/ultitoolsext/
 | `/ultiext visit <name>` | Record a visit (tests insert + update) |
 | `/ultiext visitors` | List all visitors (tests getAll) |
 | `/ultiext delvisitor <name>` | Delete a visitor (tests delete) |
+| `/ultiext reload` | Reload this plugin’s message overrides |
 
 Use `/uext` as an alias. The console or a player with `ultiext.greet` can run these commands. Players receive the greeting and have their own visit recorded when they join, regardless of command permission.
 

@@ -5,3 +5,4 @@ api-version: '26.3'
 description: Example external plugin using UltiTools-API
 authors: [wisdomme]
 depend: [UltiTools]
+source-language: en

@@ -1,0 +1,31 @@
+greet:
+  console: "Console"
+  hello: "Hello <name>! This message is from an external plugin using UltiTools-API."
+  info: "UltiTools External Example v1.0.0 - verifying @Service injection works!"
+
+help:
+  title: "=== UltiTools External Example ==="
+  hello: "/ultiext hello           - Greet (tests @Service injection)"
+  info: "/ultiext info            - Plugin info"
+  visit: '/ultiext visit \<name>    - Record a visit (tests DataOperator insert/update)'
+  visitors: "/ultiext visitors        - List all visitors (tests DataOperator getAll)"
+  delvisitor: '/ultiext delvisitor \<name> - Delete a visitor (tests DataOperator del)'
+  reload: "/ultiext reload          - Reload message overrides"
+  footer: "=============================="
+
+data:
+  not_initialized: "[ERROR] DataOperator not initialized!"
+  update_failed: "[ERROR] Update failed: <error>"
+  updated: "[DATA] Updated <name> — visit #<count:'0'>"
+  created: "[DATA] Created record for <name> — first visit!"
+  empty: "[DATA] No visitor records."
+  header: "[DATA] === Visitor Records (<count:'0'>) ==="
+  row: "  <name> — <count:'0'> visits"
+  deleted: "[DATA] Deleted visitor record for <name>"
+
+join:
+  update_failed: "[ExtExample] Failed to update visit: <error>"
+
+reload:
+  success: "External messages reloaded."
+  not_connected: "Could not reload messages: this plugin is not connected to UltiTools."

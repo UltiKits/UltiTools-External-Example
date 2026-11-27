@@ -10,10 +10,12 @@ import com.ultikits.ultitools.annotations.command.CmdMapping;
 import com.ultikits.ultitools.annotations.command.CmdParam;
 import com.ultikits.ultitools.annotations.command.CmdSender;
 import com.ultikits.ultitools.annotations.command.CmdTarget;
+import com.ultikits.ultitools.api.UltiToolsAPI;
 import com.ultikits.ultitools.entities.WhereCondition;
 import com.ultikits.ultitools.interfaces.DataOperator;
+import com.ultikits.ultitools.text.Arg;
+import com.ultikits.ultitools.text.Messages;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -23,7 +25,7 @@ import java.util.List;
  * <p>
  * How it is wired: {@code UltiToolsAPI.connect(this)} in {@link UltiToolsExtExample#onEnable()}
  * scans this plugin's package into its own IoC container, which creates this class as a bean and
- * injects {@link GreetService} through its {@code @Autowired} constructor.
+ * injects {@link GreetService} and {@link Messages} through its {@code @Autowired} constructor.
  * 框架把 {@code @CmdMapping} 编译为 Brigadier 命令树，并在 Paper 的命令生命周期事件中
  * 注册主名称 {@code /ultiext} 和别名 {@code /uext}。命令树检查发送者权限、解析参数，
  * 然后调用相应的方法。
@@ -38,22 +40,34 @@ public class GreetCommand extends BaseCommandExecutor {
 
     private final UltiToolsExtExample plugin;
     private final GreetService greetService;
+    private final Messages messages;
 
     @Autowired
-    public GreetCommand(UltiToolsExtExample plugin, GreetService greetService) {
+    public GreetCommand(UltiToolsExtExample plugin, GreetService greetService, Messages messages) {
         this.plugin = plugin;
         this.greetService = greetService;
+        this.messages = messages;
     }
 
     @CmdMapping(format = "hello")
     public void hello(@CmdSender CommandSender sender) {
-        String name = sender instanceof Player ? sender.getName() : "Console";
-        sender.sendMessage(greetService.greet(name));
+        messages.send(sender, greetService.greet(sender));
     }
 
     @CmdMapping(format = "info")
     public void info(@CmdSender CommandSender sender) {
-        sender.sendMessage(greetService.info());
+        messages.send(sender, greetService.info());
+    }
+
+    @CmdMapping(format = "reload")
+    public void reload(@CmdSender CommandSender sender) {
+        try {
+            UltiToolsAPI.reloadMessages(plugin);
+        } catch (IllegalStateException notConnected) {
+            messages.send(sender, messages.key("reload.not_connected"));
+            return;
+        }
+        messages.send(sender, messages.key("reload.success"));
     }
 
     // --- Data Storage Tests ---
@@ -62,7 +76,7 @@ public class GreetCommand extends BaseCommandExecutor {
     public void visit(@CmdSender CommandSender sender, @CmdParam("name") String playerName) {
         DataOperator<VisitorRecord> data = plugin.getVisitorData();
         if (data == null) {
-            sender.sendMessage("[ERROR] DataOperator not initialized!");
+            messages.send(sender, messages.key("data.not_initialized"));
             return;
         }
 
@@ -77,14 +91,16 @@ public class GreetCommand extends BaseCommandExecutor {
             try {
                 data.update(record);
             } catch (IllegalAccessException e) {
-                sender.sendMessage("[ERROR] Update failed: " + e.getMessage());
+                messages.send(sender, messages.key("data.update_failed"),
+                        Arg.string("error", String.valueOf(e.getMessage())));
                 return;
             }
-            sender.sendMessage("[DATA] Updated " + playerName + " — visit #" + record.getVisitCount());
+            messages.send(sender, messages.key("data.updated"),
+                    Arg.string("name", playerName), Arg.number("count", record.getVisitCount()));
         } else {
             VisitorRecord record = new VisitorRecord(playerName);
             data.insert(record);
-            sender.sendMessage("[DATA] Created record for " + playerName + " — first visit!");
+            messages.send(sender, messages.key("data.created"), Arg.string("name", playerName));
         }
     }
 
@@ -92,18 +108,19 @@ public class GreetCommand extends BaseCommandExecutor {
     public void visitors(@CmdSender CommandSender sender) {
         DataOperator<VisitorRecord> data = plugin.getVisitorData();
         if (data == null) {
-            sender.sendMessage("[ERROR] DataOperator not initialized!");
+            messages.send(sender, messages.key("data.not_initialized"));
             return;
         }
 
         List<VisitorRecord> all = data.getAll();
         if (all.isEmpty()) {
-            sender.sendMessage("[DATA] No visitor records.");
+            messages.send(sender, messages.key("data.empty"));
             return;
         }
-        sender.sendMessage("[DATA] === Visitor Records (" + all.size() + ") ===");
+        messages.send(sender, messages.key("data.header"), Arg.number("count", all.size()));
         for (VisitorRecord r : all) {
-            sender.sendMessage("  " + r.getPlayerName() + " — " + r.getVisitCount() + " visits");
+            messages.send(sender, messages.key("data.row"),
+                    Arg.string("name", r.getPlayerName()), Arg.number("count", r.getVisitCount()));
         }
     }
 
@@ -111,22 +128,23 @@ public class GreetCommand extends BaseCommandExecutor {
     public void delVisitor(@CmdSender CommandSender sender, @CmdParam("name") String playerName) {
         DataOperator<VisitorRecord> data = plugin.getVisitorData();
         if (data == null) {
-            sender.sendMessage("[ERROR] DataOperator not initialized!");
+            messages.send(sender, messages.key("data.not_initialized"));
             return;
         }
 
         data.del(WhereCondition.builder().column("player_name").value(playerName).build());
-        sender.sendMessage("[DATA] Deleted visitor record for " + playerName);
+        messages.send(sender, messages.key("data.deleted"), Arg.string("name", playerName));
     }
 
     @Override
     protected void handleHelp(CommandSender sender) {
-        sender.sendMessage("=== UltiTools External Example ===");
-        sender.sendMessage("/ultiext hello           - Greet (tests @Service injection)");
-        sender.sendMessage("/ultiext info            - Plugin info");
-        sender.sendMessage("/ultiext visit <name>    - Record a visit (tests DataOperator insert/update)");
-        sender.sendMessage("/ultiext visitors        - List all visitors (tests DataOperator getAll)");
-        sender.sendMessage("/ultiext delvisitor <name> - Delete a visitor (tests DataOperator del)");
-        sender.sendMessage("==============================");
+        messages.send(sender, messages.key("help.title"));
+        messages.send(sender, messages.key("help.hello"));
+        messages.send(sender, messages.key("help.info"));
+        messages.send(sender, messages.key("help.visit"));
+        messages.send(sender, messages.key("help.visitors"));
+        messages.send(sender, messages.key("help.delvisitor"));
+        messages.send(sender, messages.key("help.reload"));
+        messages.send(sender, messages.key("help.footer"));
     }
 }
