@@ -24,4 +24,6 @@ jobs:
           cache: maven
       - name: Verify
         # verify runs the tests, packages the JAR and writes a coverage report without a gate.
-        run: mvn -B verify
+        # -U: this build depends on UltiTools-API 7.0.0-SNAPSHOT, and the restored Maven cache can hold
+        # an older snapshot that Maven would otherwise not re-check until the next day.
+        run: mvn -B -U verify
