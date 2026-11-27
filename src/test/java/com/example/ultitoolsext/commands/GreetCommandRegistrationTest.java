@@ -15,9 +15,9 @@ import com.ultikits.ultitools.manager.ListenerManager;
 import com.ultikits.ultitools.scheduling.Scheduler;
 import com.ultikits.ultitools.scheduling.TaskContext;
 import com.ultikits.ultitools.scheduling.internal.FrameworkScheduling;
-import com.ultikits.ultitools.text.LocaleResolver;
 import com.ultikits.ultitools.text.MessageKey;
 import com.ultikits.ultitools.text.Messages;
+import com.ultikits.ultitools.text.internal.ConfiguredLocaleResolver;
 import com.ultikits.ultitools.text.internal.TextEngine;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -38,13 +38,16 @@ import org.mockbukkit.mockbukkit.command.ConsoleCommandSenderMock;
 import org.mockito.MockedStatic;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 import java.util.logging.Logger;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -130,10 +133,9 @@ final class ExternalCommands implements AutoCloseable {
 
     @SuppressWarnings("unchecked")
     ExternalCommands(Path directory) throws Exception {
-        LocaleResolver locales = mock(LocaleResolver.class);
-        when(locales.resolve(any())).thenReturn(Locale.ENGLISH);
-        when(locales.fallback()).thenReturn(Locale.ENGLISH);
-        texts = new TextEngine(locales, Logger.getLogger("external-example-test"), codeSource(UltiTools.class), directory);
+        Logger logger = Logger.getLogger("external-example-test");
+        var locales = new ConfiguredLocaleResolver(() -> "auto", () -> "en", logger);
+        texts = new TextEngine(locales, logger, codeSource(UltiTools.class), directory);
         try {
             frameworkSingleton.when(UltiTools::getInstance).thenReturn(framework);
             when(framework.isEnabled()).thenReturn(true);
@@ -181,6 +183,11 @@ final class ExternalCommands implements AutoCloseable {
             });
             context.registerType(UltiToolsExtExample.class, plugin);
             context.registerType(JavaPlugin.class, plugin);
+            var prepared = texts.prepareExternal(plugin.getName(), messageJar(directory).toUri().toURL(),
+                    directory.resolve("messages"));
+            assertThat(prepared).as("识别样例 JAR 中的消息目录").isNotNull();
+            texts.publishExternal(prepared);
+            context.registerType(Messages.class, texts.messagesFor(MessageKey.namespaceFor(plugin.getName())));
             context.scanComponents(adapter.getScanPackage());
             context.refresh();
             adapter.setContext(context);
@@ -228,6 +235,24 @@ final class ExternalCommands implements AutoCloseable {
 
     ConsoleCommandSenderMock console() {
         return (ConsoleCommandSenderMock) server.getConsoleSender();
+    }
+
+    static Path pluginClasses() throws URISyntaxException {
+        return Path.of(codeSource(GreetCommand.class).toURI());
+    }
+
+    // 外部消息加载器要求 JAR，不能直接从 Surefire 的 classes 目录读取。
+    private static Path messageJar(Path directory) throws IOException, URISyntaxException {
+        Path jar = Files.createTempFile(directory, "sample-catalogue-", ".jar");
+        Path classes = pluginClasses();
+        try (var out = new JarOutputStream(Files.newOutputStream(jar))) {
+            for (String entry : List.of("plugin.yml", "messages/en.yml", "messages/zh.yml")) {
+                out.putNextEntry(new JarEntry(entry));
+                Files.copy(classes.resolve(entry), out);
+                out.closeEntry();
+            }
+        }
+        return jar;
     }
 
     private static URL codeSource(Class<?> type) {

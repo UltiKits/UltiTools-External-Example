@@ -16,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,12 +63,58 @@ class GreetCommandTest {
     }
 
     @Test
+    void sameCommandRendersForEachPlayersLocale() throws Exception {
+        var chinese = harness.server.addPlayer("Alex");
+        chinese.setOp(true);
+        chinese.setLocale(Locale.SIMPLIFIED_CHINESE);
+        player.setLocale(Locale.US);
+
+        run("hello");
+        harness.execute(chinese, "ultiext hello");
+
+        player.assertSaid("Hello Steve" + HELLO_SUFFIX);
+        chinese.assertSaid("你好，Alex！这条消息来自使用 UltiTools-API 的外部插件。");
+        player.assertNoMoreSaid();
+        chinese.assertNoMoreSaid();
+    }
+
+    @Test
+    void reloadCallsApiBeforeConfirmingToSender() throws Exception {
+        try (var api = mockStatic(UltiToolsAPI.class)) {
+            api.when(() -> UltiToolsAPI.reloadMessages(harness.plugin)).thenAnswer(call -> {
+                player.assertNoMoreSaid();
+                return null;
+            });
+
+            run("reload");
+
+            api.verify(() -> UltiToolsAPI.reloadMessages(harness.plugin));
+            player.assertSaid("External messages reloaded.");
+            player.assertNoMoreSaid();
+        }
+    }
+
+    @Test
+    void reloadOfDisconnectedPluginDoesNotConfirmSuccess() throws Exception {
+        try (var api = mockStatic(UltiToolsAPI.class)) {
+            api.when(() -> UltiToolsAPI.reloadMessages(harness.plugin)).thenCallRealMethod();
+
+            run("reload");
+
+            api.verify(() -> UltiToolsAPI.reloadMessages(harness.plugin));
+            player.assertSaid("Could not reload messages: this plugin is not connected to UltiTools.");
+            player.assertNoMoreSaid();
+        }
+    }
+
+    @Test
     void rootPermissionHidesCommandAndPreventsWrites() {
         player.setOp(false);
         var source = ExternalCommands.source(player);
         for (String label : List.of("ultiext", "uext")) {
             assertThat(harness.dispatcher.getRoot().getChild(label).canUse(source)).isFalse();
             assertThrows(CommandSyntaxException.class, () -> harness.execute(player, label + " visit Alex"));
+            assertThrows(CommandSyntaxException.class, () -> harness.execute(player, label + " reload"));
         }
         verifyNoInteractions(harness.data);
         player.assertNoMoreSaid();
@@ -124,7 +171,9 @@ class GreetCommandTest {
     void listsEmptyAndNonEmptyStore() throws Exception {
         var sam = new VisitorRecord("Sam");
         sam.incrementVisit();
-        when(harness.data.getAll()).thenReturn(List.of(), List.of(new VisitorRecord("Alex"), sam));
+        var frequentVisitor = new VisitorRecord("Taylor");
+        frequentVisitor.setVisitCount(1000);
+        when(harness.data.getAll()).thenReturn(List.of(), List.of(new VisitorRecord("Alex"), sam), List.of(frequentVisitor));
         run("visitors");
         player.assertSaid("[DATA] No visitor records.");
         player.assertNoMoreSaid();
@@ -132,6 +181,10 @@ class GreetCommandTest {
         player.assertSaid("[DATA] === Visitor Records (2) ===");
         player.assertSaid("  Alex — 1 visits");
         player.assertSaid("  Sam — 2 visits");
+        player.assertNoMoreSaid();
+        run("visitors");
+        player.assertSaid("[DATA] === Visitor Records (1) ===");
+        player.assertSaid("  Taylor — 1000 visits");
         player.assertNoMoreSaid();
     }
 
@@ -166,6 +219,7 @@ class GreetCommandTest {
                 "/ultiext visit <name>    - Record a visit (tests DataOperator insert/update)",
                 "/ultiext visitors        - List all visitors (tests DataOperator getAll)",
                 "/ultiext delvisitor <name> - Delete a visitor (tests DataOperator del)",
+                "/ultiext reload          - Reload message overrides",
                 "==============================")) {
             player.assertSaid(line);
         }

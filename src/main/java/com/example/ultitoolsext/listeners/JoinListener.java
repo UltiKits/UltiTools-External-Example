@@ -7,6 +7,9 @@ import com.ultikits.ultitools.annotations.Autowired;
 import com.ultikits.ultitools.annotations.EventListener;
 import com.ultikits.ultitools.entities.WhereCondition;
 import com.ultikits.ultitools.interfaces.DataOperator;
+import com.ultikits.ultitools.text.Arg;
+import com.ultikits.ultitools.text.Messages;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -18,17 +21,20 @@ public class JoinListener implements Listener {
 
     private final UltiToolsExtExample plugin;
     private final GreetService greetService;
+    private final Messages messages;
 
     @Autowired
-    public JoinListener(UltiToolsExtExample plugin, GreetService greetService) {
+    public JoinListener(UltiToolsExtExample plugin, GreetService greetService, Messages messages) {
         this.plugin = plugin;
         this.greetService = greetService;
+        this.messages = messages;
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        String name = event.getPlayer().getName();
-        event.getPlayer().sendMessage(greetService.greet(name));
+        Player player = event.getPlayer();
+        String name = player.getName();
+        messages.send(player, greetService.greet(player));
 
         // Auto-record visit on join
         DataOperator<VisitorRecord> data = plugin.getVisitorData();
@@ -42,7 +48,8 @@ public class JoinListener implements Listener {
                 try {
                     data.update(record);
                 } catch (IllegalAccessException e) {
-                    event.getPlayer().sendMessage("[ExtExample] Failed to update visit: " + e.getMessage());
+                    messages.send(player, messages.key("join.update_failed"),
+                            Arg.string("error", String.valueOf(e.getMessage())));
                 }
             } else {
                 data.insert(new VisitorRecord(name));
