@@ -4,7 +4,7 @@ An UltiTools **module** for recording exploration sites and keeping a short note
 
 ## Build and install
 
-Run `mvn -B -ntp clean verify` in this directory with JDK 25. The `pom.xml` uses UltiTools-API `7.0.0-SNAPSHOT` from Maven Central snapshots and Paper API as `provided` dependencies. The JAR contains the module's descriptor and catalogues, not the server or framework.
+Run `mvn -B -ntp clean verify` in this directory with JDK 25. The `pom.xml` uses the released UltiTools-API `7.0.0` from Maven Central and Paper API as `provided` dependencies. The JAR contains the module's descriptor and catalogues, not the server or framework.
 
 On a stopped server running UltiTools 7.0, put `target/FieldJournal-1.0.0.jar` in `plugins/UltiTools/plugins/`, not directly in `plugins/`, then start the server. The root `plugin.yml` declares the module API level as the integer `700`.
 

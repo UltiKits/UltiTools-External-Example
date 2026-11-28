@@ -25,6 +25,4 @@ jobs:
           cache-dependency-path: module-example/pom.xml
       - name: Verify module
         working-directory: module-example
-        # -U: this build depends on UltiTools-API 7.0.0-SNAPSHOT, and the restored Maven cache can hold
-        # an older snapshot that Maven would otherwise not re-check until the next day.
-        run: mvn -B -ntp -U clean verify
+        run: mvn -B -ntp clean verify

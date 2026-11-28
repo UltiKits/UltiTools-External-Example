@@ -14,6 +14,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- The standalone plugin and FieldJournal module examples now depend on the UltiTools-API `7.0.0` release from Maven Central.
+- 独立插件与 FieldJournal 模块示例现依赖 Maven Central 上已发布的 UltiTools-API `7.0.0`。
 - The standalone external plugin now builds against `UltiTools-API 7.0.0-SNAPSHOT`, Paper 26.3 and JDK 25. It still connects from `JavaPlugin.onEnable()` and disconnects from `onDisable()`.
 - The command tests now exercise the framework-built Brigadier tree delivered through Paper’s commands lifecycle. In UltiTools’ automatic language mode, sample replies follow each player’s language; existing English wording and operational logs are unchanged.
 - 独立外部插件现使用 `UltiTools-API 7.0.0-SNAPSHOT`、Paper 26.3 和 JDK 25 构建，仍在 `JavaPlugin.onEnable()` 中连接、在 `onDisable()` 中断开。
