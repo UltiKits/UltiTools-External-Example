@@ -14,9 +14,9 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-- The standalone external plugin now builds against `UltiTools-API 7.0.0-SNAPSHOT`, Paper 26.3 and JDK 25. It still connects from `JavaPlugin.onEnable()` and disconnects from `onDisable()`.
+- The standalone external plugin now builds against the released `UltiTools-API 7.0.0`, Paper 26.3 and JDK 25. It still connects from `JavaPlugin.onEnable()` and disconnects from `onDisable()`.
 - The command tests now exercise the framework-built Brigadier tree delivered through Paper’s commands lifecycle. In UltiTools’ automatic language mode, sample replies follow each player’s language; existing English wording and operational logs are unchanged.
-- 独立外部插件现使用 `UltiTools-API 7.0.0-SNAPSHOT`、Paper 26.3 和 JDK 25 构建，仍在 `JavaPlugin.onEnable()` 中连接、在 `onDisable()` 中断开。
+- 独立外部插件现使用已发布的 `UltiTools-API 7.0.0`、Paper 26.3 和 JDK 25 构建，仍在 `JavaPlugin.onEnable()` 中连接、在 `onDisable()` 中断开。
 - 命令测试改为执行由框架构造、经 Paper 命令生命周期投递的 Brigadier 命令树。UltiTools 使用自动语言模式时，示例回复跟随各玩家的语言；原有英文措辞和运行日志不变。
 
 ## Previous migration — UltiTools-API 6.3.0 compatibility

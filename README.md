@@ -21,25 +21,12 @@ A minimal standalone `JavaPlugin` using the [UltiTools External Plugin API](http
 <dependency>
     <groupId>com.ultikits</groupId>
     <artifactId>UltiTools-API</artifactId>
-    <version>7.0.0-SNAPSHOT</version>
+    <version>7.0.0</version>
     <scope>provided</scope>
 </dependency>
 ```
 
-Until the framework release is available, enable Maven Central snapshots in your project:
-
-```xml
-<repositories>
-    <repository>
-        <id>central-snapshots</id>
-        <url>https://central.sonatype.com/repository/maven-snapshots/</url>
-        <releases><enabled>false</enabled></releases>
-        <snapshots><enabled>true</enabled></snapshots>
-    </repository>
-</repositories>
-```
-
-When UltiTools-API `7.0.0` is released, change the dependency to `7.0.0` and remove the snapshots repository if nothing else uses it.
+Maven resolves the released UltiTools-API `7.0.0` from Maven Central.
 
 ### 2. Declare UltiTools dependency in plugin.yml
 
@@ -125,7 +112,7 @@ Use `/uext` as an alias. The console or a player with `ultiext.greet` can run th
 Use JDK 25 and Maven:
 
 ```bash
-mvn -U clean verify
+mvn clean verify
 ```
 
 Requires UltiTools-API `7.0.0` or later on the server.
